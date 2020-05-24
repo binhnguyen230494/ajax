@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30002.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ajax", "ajax\ajax.csproj", "{B561519C-E398-48BC-9BB6-2F277D2CB855}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ajaxtable", "ajaxtable\ajaxtable.csproj", "{333533D6-888F-41A9-97F4-6734736DBEB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B561519C-E398-48BC-9BB6-2F277D2CB855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B561519C-E398-48BC-9BB6-2F277D2CB855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B561519C-E398-48BC-9BB6-2F277D2CB855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B561519C-E398-48BC-9BB6-2F277D2CB855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{333533D6-888F-41A9-97F4-6734736DBEB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{333533D6-888F-41A9-97F4-6734736DBEB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{333533D6-888F-41A9-97F4-6734736DBEB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{333533D6-888F-41A9-97F4-6734736DBEB7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1CB36E00-0001-4A31-89F1-824C8B44F948}
+	EndGlobalSection
+EndGlobal
