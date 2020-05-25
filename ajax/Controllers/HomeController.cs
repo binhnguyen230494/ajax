@@ -1,5 +1,6 @@
-﻿using ajax.Models;
+﻿
 using ajaxtable;
+using ajaxtable.model;
 using Microsoft.Ajax.Utilities;
 using System;
 using System.Collections.Generic;
@@ -39,14 +40,65 @@ namespace ajax.Controllers
         public JsonResult Update(string model)
         {
             JavaScriptSerializer bi = new JavaScriptSerializer();
-            Binh bin = bi.Deserialize<Binh>(model);
-            var entity = _context.Binhs.Find(bin.ID);
-            //entity.Salary = bin.Salary;
+            Binh binh = bi.Deserialize<Binh>(model);
+            var entity = _context.Binhs.Find(binh.ID);
+            entity.Salary = binh.Salary;
             return Json(new
             {
                 Status = true
             });
         }
-        
+        [HttpPost]
+        public JsonResult Save(string strmodel)
+        {
+            JavaScriptSerializer serializer = new JavaScriptSerializer();
+            Binh employee = serializer.Deserialize<Binh>(strmodel);
+            bool status = false;
+            string message = string.Empty;
+            //add new employee if id = 0
+            if (employee.ID == 0)
+            {
+                employee.CreatedDate = DateTime.Now;
+                _context.Binhs.Add(employee);
+                try
+                {
+                    _context.SaveChanges();
+                    status = true;
+                }
+                catch (Exception ex)
+                {
+                    status = false;
+                    message = ex.Message;
+                }
+            }
+            else
+            {
+                //update existing DB
+                //save db
+                var entity = _context.Binhs.Find(employee.ID);
+                entity.Salary = employee.Salary;
+                entity.Name = employee.Name;
+                entity.Status = employee.Status;
+
+                try
+                {
+                    _context.SaveChanges();
+                    status = true;
+                }
+                catch (Exception ex)
+                {
+                    status = false;
+                    message = ex.Message;
+                }
+
+            }
+
+            return Json(new
+            {
+                status = status,
+                message = message
+            });
+        }
+
     }
 }

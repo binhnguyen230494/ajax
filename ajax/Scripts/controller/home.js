@@ -1,5 +1,5 @@
 ﻿var homeconfig = {
-    pageSize: 2,
+    pageSize:20,
     pageindex:1
 }
 var home = {
@@ -21,7 +21,56 @@ var home = {
                 }
             
         });
-        
+        $('#btnAddNew').off('click').on('click', function () {
+            $('#modalAddUpdate').modal('show');
+            home.resetForm();
+        }); 
+        $('#btnSave').off('click').on('click', function () {
+            
+                home.saveData();
+            
+        });
+    },
+    saveData: function () {
+        var name = $('#txtName').val();
+        var salary = parseFloat($('#txtsalary').val());
+        var status = $('#ckStatus').prop('checked');
+        var id = parseInt($('#hidID').val());
+        var employee = {
+            Name: name,
+            Salary: salary,
+            Status: status,
+            ID: id
+        }
+        $.ajax({
+            url: '/Home/Save',
+            data: {
+                strmodel: JSON.stringify(employee)
+            },
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                if (response.status == true) {
+                    alert("Save Success");
+                        $('#modalAddUpdate').modal('hide');
+                        home.loadData(true);
+                }
+
+                
+                else {
+                    alert(response.message);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    },
+    resetForm: function () {
+        $('#hidID').val('0');
+        $('#txtName').val('');
+        $('txtsalary').val(0);
+        $('#ckStatus').prop('checked', true);
     },
     updateSalary: function (id, value) {
         var data = {
@@ -83,7 +132,7 @@ var home = {
             visiblePages: 10,
             onPageClick: function (event, page) {
                 homeconfig.pageindex = page;
-                setTimeout(callback, 200);
+                setTimeout(callback, 20);
             }
         });
     }
