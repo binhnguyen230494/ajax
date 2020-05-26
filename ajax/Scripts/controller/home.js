@@ -1,5 +1,5 @@
 ﻿var homeconfig = {
-    pageSize:20,
+    pageSize:5,
     pageindex:1
 }
 var home = {
@@ -8,6 +8,30 @@ var home = {
         home.registerEvent();
     },
     registerEvent: function () {
+        $('#frmSaveData').validate({
+            rules: {
+                txtName: {
+                    required: true,
+                    minlength: 5
+                },
+                txtsalary: {
+                    required: true,
+                    number: true,
+                    min: 0
+                }
+            },
+            messages: {
+                txtName: {
+                    required: "Bạn phải nhập tên",
+                    minlength: "Tên phải lớn hơn 5 ký tự"
+                },
+                txtsalary: {
+                    required: "Bạn phải nhập lương",
+                    number: "Lương phải là số",
+                    min: "Lương của bạn phải lớn hơn hoặc bằng 0"
+                }
+            }
+        });
        
         $('.txtsalary').off('keypress').on('keypress', function (e) {
             if (e.which == 13) 
@@ -26,9 +50,81 @@ var home = {
             home.resetForm();
         }); 
         $('#btnSave').off('click').on('click', function () {
-            
+            if ($('#frmSaveData').valid()) {
                 home.saveData();
-            
+            }
+        });
+        $('.btn-edit').off('click').on('click', function () {
+            $('#modalAddUpdate').modal('show');
+            var id = $(this).data('id');
+            home.loadDetail(id);
+        });
+        $('.btn-delete').off('click').on('click', function () {
+            var id = $(this).data('id');
+            bootbox.confirm("Are you sure to delete this employee?", function (result) {
+                home.deleteEmployee(id);
+            });
+        });
+        $('#btnSearch').off('click').on('click', function () {
+            home.loadData(true);
+        });
+        $('#txtNameS').off('keypress').on('keypress', function (e) {
+            if (e.which == 13) {
+                home.loadData(true);
+            }
+        });
+        $('#btnReset').off('click').on('click', function () {
+            $('#txtNameS').val('');
+            $('#ddlStatusS').val('');
+            home.loadData(true);
+        });
+    },
+    deleteEmployee: function (id) {
+        $.ajax({
+            url: '/Home/Delete',
+            data: {
+                id: id
+            },
+            type: 'POST',
+            dataType: 'json',
+            success: function (response) {
+                if (response.status == true) {
+                    bootbox.alert("Delete Success", function () {
+                        home.loadData(true);
+                    });
+                }
+                else {
+                    bootbox.alert(response.message);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    },
+    loadDetail: function (id) {
+        $.ajax({
+            url: '/Home/GetDetail',
+            data: {
+                id: id
+            },
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response.status == true) {
+                    var data = response.data;
+                    $('#hidID').val(data.ID);
+                    $('#txtName').val(data.Name);
+                    $('#txtsalary').val(data.Salary);
+                    $('#ckStatus').prop('checked', data.Status);
+                }
+                else {
+                    bootbox.alert(response.message);
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
         });
     },
     saveData: function () {
@@ -51,14 +147,15 @@ var home = {
             dataType: 'json',
             success: function (response) {
                 if (response.status == true) {
-                    alert("Save Success");
+                    bootbox.alert("Save Success", function () {
                         $('#modalAddUpdate').modal('hide');
                         home.loadData(true);
+                    });
                 }
 
                 
                 else {
-                    alert(response.message);
+                    bootbox.alert(response.message);
                 }
             },
             error: function (err) {
@@ -84,19 +181,23 @@ var home = {
             data: { model: JSON.stringify(data)  },
             success: function (reponse) {
                 if (reponse.Status) {
-                    alert('Update success.');
+                    bootbox.alert('Update success.');
                 }
                 else {
-                    alert('Update failed.');
+                    bootbox.alert('Update failed.');
                 }
             }
         })
     },
-    loadData: function () {
+    loadData: function (changePageSize) {
+        var name = $('#txtNameS').val();
+        var status = $('#ddlStatusS').val();
         $.ajax({
             url: '/Home/LoadData',
             type: 'Get',
             data: {
+                name: name,
+                status: status,
                 page: homeconfig.pageindex,
                 pageSize: homeconfig.pageSize
 
@@ -118,21 +219,30 @@ var home = {
                     $('#tbData').html(html);
                     home.paging(response.total, function () {
                         home.loadData();
-                    });
+                    }, changePageSize);
                     home.registerEvent();
                 }
             }
 
         })
     },
-    paging: function (totalRow, callback) {
+    paging: function (totalRow, callback, changePageSize) {
         var totalPage = Math.ceil(totalRow / homeconfig.pageSize);
+        if ($('#pagination a').length === 0 || changePageSize === true) {
+            $('#pagination').empty();
+            $('#pagination').removeData("twbs-pagination");
+            $('#pagination').unbind("page");
+        }
         $('#pagination').twbsPagination({
             totalPages: totalPage,
+            first: "Đầu",
+            next: "Tiếp",
+            last: "Cuối",
+            prev: "Trước",
             visiblePages: 10,
             onPageClick: function (event, page) {
                 homeconfig.pageindex = page;
-                setTimeout(callback, 20);
+                setTimeout(callback, 200);
             }
         });
     }

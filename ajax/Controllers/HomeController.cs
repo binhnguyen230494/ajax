@@ -24,10 +24,19 @@ namespace ajax.Controllers
             return View();
         }
         [HttpGet]
-        public JsonResult LoadData(int page,int pagesize = 2)
+        public JsonResult LoadData(string name, string status, int page,int pagesize = 2)
         {
-            var model = _context.Binhs.OrderByDescending(x=>x.CreatedDate).Skip((page - 1 )* pagesize).Take(pagesize);
-            int totalRow = _context.Binhs.Count();
+            IQueryable<Binh> model = _context.Binhs;
+            if (!string.IsNullOrEmpty(name))
+                model = model.Where(x => x.Name.Contains(name));
+            if (!string.IsNullOrEmpty(status))
+            {
+                var statusBool = bool.Parse(status);
+                model = model.Where(x => x.Status == statusBool);
+            }
+            int totalRow = model.Count();
+            model = model.OrderBy(x=>x.ID).Skip((page - 1 )* pagesize).Take(pagesize);
+           
             return Json(new
             {
                 data = model,
@@ -99,6 +108,40 @@ namespace ajax.Controllers
                 message = message
             });
         }
+        [HttpGet]
+        public JsonResult GetDetail(int id)
+        {
+            var employee = _context.Binhs.Find(id);
+            return Json(new
+            {
+                data = employee,
+                status = true
+            }, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
+        public JsonResult Delete(int id)
+        {
+            var entity = _context.Binhs.Find(id);
+            _context.Binhs.Remove(entity);
+            try
+            {
+                _context.SaveChanges();
+                return Json(new
+                {
+                    status = true
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    status = false,
+                    message = ex.Message
+                });
+            }
+
+        }
+
 
     }
 }
